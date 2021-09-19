@@ -43,10 +43,10 @@ params:
         # disableHLJS: true # to disable highlight.js
         # disableFingerprinting: true
         favicon: "pacman.ico"
-        #favicon16x16: "<link / abs url>"
-        #favicon32x32: "<link / abs url>"
-        #apple_touch_icon: "<link / abs url>"
-        #safari_pinned_tab: "<link / abs url>"
+        favicon16x16: "pacman.ico"
+        favicon32x32: "pacman.ico"
+        apple_touch_icon: "pacman.ico"
+        safari_pinned_tab: "pacman.ico"
 
     label:
         text: "Página inicial"
