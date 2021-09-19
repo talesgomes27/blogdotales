@@ -21,9 +21,9 @@ params:
     keywords: [Blog, Portfolio, PaperMod]
     author: Tales Gomes
     # author: ["Me", "You"] # multiple authors
-    images: ["dark-blue-avatar.png"]
+    images: ["share.png"]
     DateFormat: "January 2, 2006"
-    defaultTheme: dark # dark, light, auto
+    defaultTheme: auto # dark, light, auto
     disableThemeToggle: false
 
     ShowReadingTime: true
@@ -59,8 +59,8 @@ params:
         title: Tales Gomes
         subtitle: "Engenheiro da Computação e Analista de dados"
         imageUrl: "dark-blue-avatar.png"
-        imageWidth: 120
-        imageHeight: 120
+        imageWidth: 200
+        imageHeight: 200
         imageTitle: Pacman Ghost
         buttons:
             - name: Blog
