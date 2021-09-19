@@ -1,0 +1,703 @@
+---
+title: "Case Study: How Does a Bike-Share Navigate Speedy Success?"
+author: 'Tales Gomes'
+excerpt: "Projeto desenvolvido para aquisição do certificado profissional em análise de dados, através da plataforma Coursera, sob a instrução da Google. Nele foram coletados, ao longo de 12 meses, dados acerca dos usuários membros assinantes do serviço oferecido pela empresa Bikeshare e usuários avulsos, de modo a identificar a diferença entre os dois grupos quanto a forma de utilização do serviço, visando à elaboração de recomendações para a equipe de marketing da empresa."
+date: '2021-09-18'
+categories: ["Analise de dados"]
+tags: ["R", "Programação", "Ciência de dados"]
+cover:
+    image: "cover.jpg"
+    # can also paste direct link from external site
+    # ex. https://i.ibb.co/K0HVPBd/paper-mod-profilemode.png
+    alt: "How Does a Bike-Share Navigate Speedy Success?"
+    # caption: "Cyberpunk 2077 on AWS G4dn"
+    relative: true # To use relative path for cover image, used in hugo Page-bundles
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/core-js/shim.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/react/react.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/react/react-dom.min.js"></script>
+<script src="{{< blogdown/postref >}}index_files/reactwidget/react-tools.js"></script>
+<script src="{{< blogdown/postref >}}index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="{{< blogdown/postref >}}index_files/reactable-binding/reactable.js"></script>
+
+
+<div id="scenario" class="section level2">
+<h2>Scenario</h2>
+<p>You are a junior data analyst working in the marketing analyst team at Cyclistic, a bike-share company in Chicago. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore, your team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, your team will design a new marketing strategy to convert casual riders into annual members. But first, Cyclistic executives must approve your ecommendations, so they must be backed up with compelling data insights and professional data visualizations.</p>
+</div>
+<div id="ask-phase" class="section level2">
+<h2>Ask Phase</h2>
+<p><u><strong>Guiding questions</strong></u></p>
+<ol style="list-style-type: decimal">
+<li><p>What is the problem you are trying to solve?</p>
+<ul>
+<li><p>How do annual members and casual riders use Cyclistic bikes differently?</p></li>
+<li><p>Why would casual riders buy Cyclistic annual memberships?</p></li>
+<li><p>How can Cyclistic use digital media to influence casual riders to become members?</p></li>
+</ul></li>
+<li><p>How can your insights drive business decisions?</p>
+<ul>
+<li>improve the marketing campaign</li>
+</ul></li>
+<li><p>Identify the business task</p>
+<ul>
+<li>Undertand the diferente between casual users and members to improve the marketing campaign</li>
+</ul></li>
+<li><p>Consider key stakeholders</p>
+<ul>
+<li><p>Main stakeholders:</p>
+<ul>
+<li><p>Cyclistic executive team</p></li>
+<li><p>Lily Moreno</p></li>
+</ul></li>
+<li><p>Secundary stakeholder:</p>
+<ul>
+<li>Cyclistic marketing analytics team leader</li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+<div id="prepare" class="section level2">
+<h2>Prepare</h2>
+<ol style="list-style-type: decimal">
+<li><p>Where is your data located?</p>
+<ul>
+<li><a href="https://divvy-tripdata.s3.amazonaws.com/index.html">Cyclistic bikeshare database</a></li>
+</ul></li>
+<li><p>How is the data organized?</p>
+<ul>
+<li>the data base is organized in 12 files with month data from july 2020 to june 2021.</li>
+</ul></li>
+<li><p>Are there issues with bias or credibility in this data?</p>
+<ul>
+<li><p>Reliable -Yes, the data is reliable. The data is a primary source data based on a fictional company.</p></li>
+<li><p>Original - Yes, the original public data can be located.</p></li>
+<li><p>Comprehensive - Yes, no vital information is missing.</p></li>
+<li><p>Current - Yes, the data base is updated monyhly.</p></li>
+</ul></li>
+<li><p>How are you addressing licensing, privacy, security, and accessibility?</p>
+<ul>
+<li>the data is distributed in this <a href="https://www.divvybikes.com/data-license-agreement">license</a>.</li>
+</ul></li>
+<li><p>How did you verify the data’s integrity?</p>
+<ul>
+<li>Using R (ver. 4.1) and Rstudio (ver. 1.4)</li>
+</ul></li>
+<li><p>How does it help you answer your question?</p>
+<ul>
+<li>R is a powerful tool that makes it easy to manipulate large databases.</li>
+</ul></li>
+<li><p>Are there any problems with the data?</p>
+<ul>
+<li>Yes, Some missing values, but it did not interfere with the analysis.</li>
+</ul></li>
+</ol>
+</div>
+<div id="process-phases" class="section level2">
+<h2>Process Phases</h2>
+<div id="ingesting-and-filtering-the-data" class="section level3">
+<h3>Ingesting and filtering the data</h3>
+<ul>
+<li>Ingesting the data using the <a href="https://vroom.r-lib.org/articles/vroom.html">vroom</a> library and loading into the bikeshare_data.</li>
+</ul>
+<pre class="r"><code>library(tidyverse) # used to filter the data
+library(lubridate) #used to work with date class. 
+library(reactable)
+
+#loding the files name and 
+files &lt;- fs::dir_ls(path = &quot;database/&quot;)
+files</code></pre>
+<pre><code>database/202007-divvy-tripdata.csv database/202008-divvy-tripdata.csv 
+database/202009-divvy-tripdata.csv database/202010-divvy-tripdata.csv 
+database/202011-divvy-tripdata.csv database/202012-divvy-tripdata.csv 
+database/202101-divvy-tripdata.csv database/202102-divvy-tripdata.csv 
+database/202103-divvy-tripdata.csv database/202104-divvy-tripdata.csv 
+database/202105-divvy-tripdata.csv database/202106-divvy-tripdata.csv </code></pre>
+<pre class="r"><code>bikeshare_data &lt;- vroom::vroom(files,
+                               col_names = TRUE)</code></pre>
+<pre class="r"><code>head(bikeshare_data)</code></pre>
+<pre><code># A tibble: 6 × 13
+  ride_id          rideable_type started_at          ended_at            start_station_n…
+  &lt;chr&gt;            &lt;chr&gt;         &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt;           
+1 762198876D69004D docked_bike   2020-07-09 15:22:02 2020-07-09 15:25:52 Ritchie Ct &amp; Ba…
+2 BEC9C9FBA0D4CF1B docked_bike   2020-07-24 23:56:30 2020-07-25 00:20:17 Halsted St &amp; Ro…
+3 D2FD8EA432C77EC1 docked_bike   2020-07-08 19:49:07 2020-07-08 19:56:22 Lake Shore Dr &amp;…
+4 54AE594E20B35881 docked_bike   2020-07-17 19:06:42 2020-07-17 19:27:38 LaSalle St &amp; Il…
+5 54025FDC7440B56F docked_bike   2020-07-04 10:39:57 2020-07-04 10:45:05 Lake Shore Dr &amp;…
+6 65636B619E24257F docked_bike   2020-07-28 16:33:03 2020-07-28 16:49:10 Fairbanks St &amp; …
+# … with 8 more variables: start_station_id &lt;chr&gt;, end_station_name &lt;chr&gt;,
+#   end_station_id &lt;chr&gt;, start_lat &lt;dbl&gt;, start_lng &lt;dbl&gt;, end_lat &lt;dbl&gt;,
+#   end_lng &lt;dbl&gt;, member_casual &lt;chr&gt;</code></pre>
+<ul>
+<li><p>Filtering and Process the data using the tools in the <a href="https://www.tidyverse.org/">tidyverse</a>.</p>
+<ul>
+<li><p>In this fase we created the following variables:</p>
+<ul>
+<li><p><strong>trip_duration</strong> - the trip duration in minutes;</p></li>
+<li><p><strong>weekday_day</strong> - The day of the week the trip takes place;</p></li>
+<li><p><strong>is_weekend</strong> - Test if the day is a weekend;</p></li>
+<li><p><strong>date_month</strong> - Stores the month the trip takes place;</p></li>
+<li><p><strong>date_hour</strong> - Stores the hour the trip takes place;</p></li>
+<li><p><strong>date_season -</strong> Stores the season of the year;</p></li>
+<li><p><strong>day_time -</strong> Stores the time of the day;</p></li>
+<li><p><strong>trip_route -</strong> Stores the route of the trip (start station to end station).</p></li>
+</ul></li>
+<li><p>Then we keep the following variable:</p>
+<ul>
+<li><p><strong>start_station_name</strong>;</p></li>
+<li><p><strong>ride_id</strong>;</p></li>
+<li><p><strong>rideable_type;</strong></p></li>
+<li><p><strong>and member_casual.</strong></p></li>
+</ul></li>
+<li><p>the we exclude the remaning original variables.</p></li>
+<li><p>then we change the class of the categorical variables to factor.</p></li>
+<li><p>then we excluse the missing data;</p></li>
+<li><p>And finally, we filter the data to contain only trip duration longer than 0 minutes.</p></li>
+</ul></li>
+</ul>
+<pre class="r"><code>#Filterring data.
+bikeshare_data &lt;- bikeshare_data |&gt;
+  mutate(trip_duration = as.numeric(ended_at - started_at)/60, 
+         # near_distance = geosphere::distHaversine(cbind(start_lng, start_lat),
+         #                                    cbind(end_lng, end_lat)),
+         weekday_day = wday(started_at, label = TRUE), 
+         is_weekend = ifelse((wday(started_at)==7 | 
+                              wday(started_at)==1), &quot;yes&quot;, &quot;no&quot;), 
+         date_month = month(started_at, label = TRUE), 
+         date_hour = hour(started_at), 
+         date_season = case_when( 
+           month(started_at) == 1 | month(started_at) == 2 | month(started_at) == 3 ~ &quot;winter&quot;,
+           month(started_at) == 4 | month(started_at) == 5 | month(started_at) == 6 ~ &quot;spring&quot;,
+           month(started_at) == 7 | month(started_at) == 8 | month(started_at) == 9 ~ &quot;summer&quot;,
+           month(started_at) == 10 | month(started_at) == 11 | month(started_at) == 12 ~ &quot;fall&quot;),
+         day_time = case_when( 
+           hour(started_at) &lt; 6 ~ &quot;dawn&quot;,
+           hour(started_at) &gt;=6 &amp; hour(started_at) &lt; 12 ~ &quot;morning&quot;,
+           hour(started_at) &gt;= 12 &amp; hour(started_at) &lt; 18 ~ &quot;afternoon&quot;,
+           hour(started_at) &gt;= 18 ~ &quot;night&quot;),
+         trip_route = str_c(start_station_name, end_station_name, sep = &quot; to &quot;)) |&gt; 
+  relocate(start_station_name, .before = trip_route) |&gt; 
+  select(-(started_at:end_lng)) |&gt; 
+  mutate(is_weekend = factor(is_weekend,
+                             levels = c(&quot;yes&quot;, &quot;no&quot;),
+                             ordered = TRUE),
+         rideable_type = factor(rideable_type,
+                                levels = c(&quot;docked_bike&quot;, &quot;electric_bike&quot;, &quot;classic_bike&quot;),
+                                ordered = TRUE),
+         member_casual = factor(member_casual,
+                                levels = c(&quot;member&quot;, &quot;casual&quot;),
+                                ordered = TRUE),
+         date_season = factor(date_season,
+                              levels = c(&quot;winter&quot;, &quot;spring&quot;, &quot;summer&quot;, &quot;fall&quot;),
+                              ordered = TRUE),
+         date_hour = factor(date_hour,
+                            levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                       12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
+                            ordered = TRUE),
+         day_time = factor(day_time, levels = c(&quot;dawn&quot;, &quot;morning&quot;, &quot;afternoon&quot;, &quot;night&quot;),
+                           ordered = TRUE)) |&gt;
+  drop_na(rideable_type:day_time) |&gt; 
+  filter(trip_duration &gt; 0)</code></pre>
+<ul>
+<li>Checking the data</li>
+</ul>
+<pre class="r"><code>glimpse(bikeshare_data)</code></pre>
+<pre><code>Rows: 4,449,799
+Columns: 12
+$ ride_id            &lt;chr&gt; &quot;762198876D69004D&quot;, &quot;BEC9C9FBA0D4CF1B&quot;, &quot;D2FD8EA432…
+$ rideable_type      &lt;ord&gt; docked_bike, docked_bike, docked_bike, docked_bike,…
+$ member_casual      &lt;ord&gt; member, member, casual, casual, member, casual, mem…
+$ trip_duration      &lt;dbl&gt; 3.833333, 23.783333, 7.250000, 20.933333, 5.133333,…
+$ weekday_day        &lt;ord&gt; qui, sex, qua, sex, sáb, ter, qui, seg, qui, seg, s…
+$ is_weekend         &lt;ord&gt; no, no, no, no, yes, no, no, no, no, no, no, no, no…
+$ date_month         &lt;ord&gt; jul, jul, jul, jul, jul, jul, jul, jul, jul, jul, j…
+$ date_hour          &lt;ord&gt; 15, 23, 19, 19, 10, 16, 11, 16, 11, 18, 15, 18, 9, …
+$ date_season        &lt;ord&gt; summer, summer, summer, summer, summer, summer, sum…
+$ day_time           &lt;ord&gt; afternoon, night, night, night, morning, afternoon,…
+$ start_station_name &lt;chr&gt; &quot;Ritchie Ct &amp; Banks St&quot;, &quot;Halsted St &amp; Roscoe St&quot;, …
+$ trip_route         &lt;chr&gt; &quot;Ritchie Ct &amp; Banks St to Wells St &amp; Evergreen Ave&quot;…</code></pre>
+</div>
+</div>
+<div id="analyse-phase" class="section level2">
+<h2>Analyse Phase</h2>
+<ul>
+<li>First, we analyze the data broadly to see patterns, then group it by user type to see differences.</li>
+</ul>
+<pre class="r"><code>bikeshare_summary &lt;- bikeshare_data |&gt;
+  Hmisc::describe()
+
+
+bikeshare_summary</code></pre>
+<pre><code>bikeshare_data 
+
+ 12  Variables      4449799  Observations
+--------------------------------------------------------------------------------
+ride_id 
+       n  missing distinct 
+ 4449799        0  4449799 
+
+lowest : 000001004784CD35 000002EBE159AE82 00001A81D056B01B 00001DCF2BC423F4 00001E17DEF40948
+highest: FFFFEE0233D826DE FFFFFB64C697B86A FFFFFB6DD39792F1 FFFFFC1045B11550 FFFFFF0C829D3E7A
+--------------------------------------------------------------------------------
+rideable_type 
+       n  missing distinct 
+ 4449799        0        3 
+                                                    
+Value        docked_bike electric_bike  classic_bike
+Frequency        2040302       1130987       1278510
+Proportion         0.459         0.254         0.287
+--------------------------------------------------------------------------------
+member_casual 
+       n  missing distinct 
+ 4449799        0        2 
+                          
+Value       member  casual
+Frequency  2523705 1926094
+Proportion   0.567   0.433
+--------------------------------------------------------------------------------
+trip_duration 
+       n  missing distinct     Info     Mean      Gmd      .05      .10 
+ 4449799        0    26762        1     26.3    30.95     3.05     4.40 
+     .25      .50      .75      .90      .95 
+    7.55    13.68    25.18    44.02    68.63 
+
+lowest : 1.666667e-02 3.333333e-02 5.000000e-02 6.666667e-02 8.333333e-02
+highest: 5.270138e+04 5.392160e+04 5.428335e+04 5.569168e+04 5.594415e+04
+--------------------------------------------------------------------------------
+weekday_day 
+       n  missing distinct 
+ 4449799        0        7 
+
+lowest : dom seg ter qua qui, highest: ter qua qui sex sáb
+                                                           
+Value         dom    seg    ter    qua    qui    sex    sáb
+Frequency  688506 545890 567474 603567 575301 654430 814631
+Proportion  0.155  0.123  0.128  0.136  0.129  0.147  0.183
+--------------------------------------------------------------------------------
+is_weekend 
+       n  missing distinct 
+ 4449799        0        2 
+                          
+Value          yes      no
+Frequency  1503137 2946662
+Proportion   0.338   0.662
+--------------------------------------------------------------------------------
+date_month 
+       n  missing distinct 
+ 4449799        0       12 
+
+lowest : jan fev mar abr mai, highest: ago set out nov dez
+                                                                         
+Value         jan    fev    mar    abr    mai    jun    jul    ago    set
+Frequency   96828  49618 228484 337192 531579 729529 549665 619481 530767
+Proportion  0.022  0.011  0.051  0.076  0.119  0.164  0.124  0.139  0.119
+                               
+Value         out    nov    dez
+Frequency  386702 258823 131131
+Proportion  0.087  0.058  0.029
+--------------------------------------------------------------------------------
+date_hour 
+       n  missing distinct 
+ 4449799        0       24 
+
+lowest : 0  1  2  3  4 , highest: 19 20 21 22 23
+--------------------------------------------------------------------------------
+date_season 
+       n  missing distinct 
+ 4449799        0        4 
+                                          
+Value       winter  spring  summer    fall
+Frequency   374930 1598300 1699913  776656
+Proportion   0.084   0.359   0.382   0.175
+--------------------------------------------------------------------------------
+day_time 
+       n  missing distinct 
+ 4449799        0        4 
+                                                  
+Value           dawn   morning afternoon     night
+Frequency     166090    995313   2041544   1246852
+Proportion     0.037     0.224     0.459     0.280
+--------------------------------------------------------------------------------
+start_station_name 
+       n  missing distinct 
+ 4167785   282014      712 
+
+lowest : 2112 W Peterson Ave          63rd St Beach                900 W Harrison St            Aberdeen St &amp; Jackson Blvd   Aberdeen St &amp; Monroe St     
+highest: Woodlawn Ave &amp; 55th St       Woodlawn Ave &amp; 75th St       Woodlawn Ave &amp; Lake Park Ave Yates Blvd &amp; 75th St         Yates Blvd &amp; 93rd St        
+--------------------------------------------------------------------------------
+trip_route 
+       n  missing distinct 
+ 4016328   433471   146433 
+
+lowest : 2112 W Peterson Ave to 2112 W Peterson Ave            2112 W Peterson Ave to Albany Ave &amp; Montrose Ave      2112 W Peterson Ave to Ashland Ave &amp; Belle Plaine Ave 2112 W Peterson Ave to Ashland Ave &amp; Wrightwood Ave   2112 W Peterson Ave to Avers Ave &amp; Belmont Ave       
+highest: Yates Blvd &amp; 93rd St to Lake Shore Dr &amp; Monroe St     Yates Blvd &amp; 93rd St to Phillips Ave &amp; 79th St        Yates Blvd &amp; 93rd St to South Shore Dr &amp; 74th St      Yates Blvd &amp; 93rd St to Vernon Ave &amp; 75th St          Yates Blvd &amp; 93rd St to Yates Blvd &amp; 93rd St         
+--------------------------------------------------------------------------------</code></pre>
+<pre class="r"><code>summary(bikeshare_data$date_hour)</code></pre>
+<pre><code>     0      1      2      3      4      5      6      7      8      9     10 
+ 56638  36472  20650  11258  10775  30297  85148 148782 172571 160860 187933 
+    11     12     13     14     15     16     17     18     19     20     21 
+240019 285285 293136 300770 326496 381280 454577 400171 295734 202597 142745 
+    22     23 
+117563  88042 </code></pre>
+<ul>
+<li><p>Analyzing the data generated by the “describe” function we can infer that:</p>
+<ul>
+<li><p>Regarding the type of bikes, “docked_bike” is more than 45% of all trips, followed by “classic_bike” with 28% and “eletric_bike” with 25%;</p></li>
+<li><p>Regarding to the type of user, “member” represents 56.7% while “casual” represents 43.3%;</p></li>
+<li><p>Regarding to the day, “weekend” represents 33.8% of the races with a peak on Saturday and a minimum on Monday;</p></li>
+<li><p>Regarding the time of day, it can be observed that the peak occurs at 17, 18 and 16 hours. The races decrease from afternoon, night, morning, until dawn.</p></li>
+<li><p>Regarding to the month and season, the values decrease from summer, spring, autumn to winter. With the busiest months being June, August and July and the least busy months being February, December and January;</p></li>
+<li><p>Regarding to the duration of the trip, the average duration is 26 minutes.</p></li>
+</ul></li>
+</ul>
+<pre class="r"><code>options(reactable.theme = reactableTheme(
+  color = &quot;hsl(233, 9%, 87%)&quot;,
+  backgroundColor = &quot;hsl(233, 9%, 19%)&quot;,
+  borderColor = &quot;hsl(233, 9%, 22%)&quot;,
+  stripedColor = &quot;hsl(233, 12%, 22%)&quot;,
+  highlightColor = &quot;hsl(233, 12%, 24%)&quot;,
+  inputStyle = list(backgroundColor = &quot;hsl(233, 9%, 25%)&quot;),
+  selectStyle = list(backgroundColor = &quot;hsl(233, 9%, 25%)&quot;),
+  pageButtonHoverStyle = list(backgroundColor = &quot;hsl(233, 9%, 25%)&quot;),
+  pageButtonActiveStyle = list(backgroundColor = &quot;hsl(233, 9%, 28%)&quot;)
+))
+
+
+
+bikeshare_skim_member &lt;- bikeshare_data |&gt; 
+  group_by(member_casual) |&gt; 
+  skimr::skim()
+  
+
+reactable(bikeshare_skim_member, filterable = TRUE, paginationType = &quot;jump&quot;, 
+          columns = list(
+  skim_type = colDef(
+    cell = function(value) {
+      htmltools::tags$b(value)
+    }
+  )
+))</code></pre>
+<div id="htmlwidget-1" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"skim_type":["character","character","character","character","character","character","factor","factor","factor","factor","factor","factor","factor","factor","factor","factor","factor","factor","factor","factor","numeric","numeric"],"skim_variable":["ride_id","ride_id","start_station_name","start_station_name","trip_route","trip_route","rideable_type","rideable_type","weekday_day","weekday_day","is_weekend","is_weekend","date_month","date_month","date_hour","date_hour","date_season","date_season","day_time","day_time","trip_duration","trip_duration"],"member_casual":["member","casual","member","casual","member","casual","member","casual","member","casual","member","casual","member","casual","member","casual","member","casual","member","casual","member","casual"],"n_missing":[0,0,156513,125501,232590,200881,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"complete_rate":[1,1,0.937982846648083,0.934841705545005,0.907837881210363,0.895705505546458,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"character.min":[16,16,10,10,24,24,"NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA"],"character.max":[16,16,53,53,110,110,"NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA"],"character.empty":[0,0,0,0,0,0,"NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA"],"character.n_unique":[2523705,1926094,703,709,118707,116845,"NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA"],"character.whitespace":[0,0,0,0,0,0,"NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA"],"factor.ordered":[null,null,null,null,null,null,true,true,true,true,true,true,true,true,true,true,true,true,true,true,null,null],"factor.n_unique":["NA","NA","NA","NA","NA","NA",3,3,7,7,2,2,12,12,24,24,4,4,4,4,"NA","NA"],"factor.top_counts":[null,null,null,null,null,null,"doc: 1072201, cla: 824779, ele: 626725","doc: 968101, ele: 504262, cla: 453731","qua: 388264, sáb: 375753, sex: 373804, ter: 363566","sáb: 438878, dom: 366018, sex: 280626, qua: 215303","no: 1825464, yes: 698241","no: 1121198, yes: 804896","jun: 358893, ago: 330895, set: 300718, jul: 281002","jun: 370636, ago: 288586, jul: 268663, mai: 256888","17: 267141, 18: 232241, 16: 216012, 15: 174986","17: 187436, 18: 167930, 16: 165268, 15: 151510","sum: 912615, spr: 834186, fal: 514249, win: 262655","sum: 787298, spr: 764114, fal: 262407, win: 112275","aft: 1128552, mor: 669402, nig: 656079, daw: 69672","aft: 912992, nig: 590773, mor: 325911, daw: 96418",null,null],"numeric.mean":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",15.1494431071249,40.9085652880908],"numeric.sd":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",55.7948146855381,361.061327741666],"numeric.p0":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",0.0166666666666667,0.0166666666666667],"numeric.p25":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",6.2,10.6166666666667],"numeric.p50":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",10.8,19.25],"numeric.p75":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",18.7666666666667,36.35],"numeric.p100":["NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA","NA",33421.3666666667,55944.15],"numeric.hist":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"▇▁▁▁▁","▇▁▁▁▁"]},"columns":[{"accessor":"skim_type","name":"skim_type","type":"character","cell":[{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["character"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["factor"]},{"name":"b","attribs":{},"children":["numeric"]},{"name":"b","attribs":{},"children":["numeric"]}]},{"accessor":"skim_variable","name":"skim_variable","type":"character"},{"accessor":"member_casual","name":"member_casual","type":["ordered","factor"]},{"accessor":"n_missing","name":"n_missing","type":"numeric"},{"accessor":"complete_rate","name":"complete_rate","type":"numeric"},{"accessor":"character.min","name":"character.min","type":"numeric"},{"accessor":"character.max","name":"character.max","type":"numeric"},{"accessor":"character.empty","name":"character.empty","type":"numeric"},{"accessor":"character.n_unique","name":"character.n_unique","type":"numeric"},{"accessor":"character.whitespace","name":"character.whitespace","type":"numeric"},{"accessor":"factor.ordered","name":"factor.ordered","type":"logical"},{"accessor":"factor.n_unique","name":"factor.n_unique","type":"numeric"},{"accessor":"factor.top_counts","name":"factor.top_counts","type":"character"},{"accessor":"numeric.mean","name":"numeric.mean","type":"numeric"},{"accessor":"numeric.sd","name":"numeric.sd","type":"numeric"},{"accessor":"numeric.p0","name":"numeric.p0","type":"numeric"},{"accessor":"numeric.p25","name":"numeric.p25","type":"numeric"},{"accessor":"numeric.p50","name":"numeric.p50","type":"numeric"},{"accessor":"numeric.p75","name":"numeric.p75","type":"numeric"},{"accessor":"numeric.p100","name":"numeric.p100","type":"numeric"},{"accessor":"numeric.hist","name":"numeric.hist","type":"character"}],"filterable":true,"defaultPageSize":10,"paginationType":"jump","showPageInfo":true,"minRows":1,"theme":{"color":"hsl(233, 9%, 87%)","backgroundColor":"hsl(233, 9%, 19%)","borderColor":"hsl(233, 9%, 22%)","stripedColor":"hsl(233, 12%, 22%)","highlightColor":"hsl(233, 12%, 24%)","inputStyle":{"backgroundColor":"hsl(233, 9%, 25%)"},"selectStyle":{"backgroundColor":"hsl(233, 9%, 25%)"},"pageButtonHoverStyle":{"backgroundColor":"hsl(233, 9%, 25%)"},"pageButtonActiveStyle":{"backgroundColor":"hsl(233, 9%, 28%)"}},"dataKey":"e7d34826e1115692b1233932c77a5fad","key":"e7d34826e1115692b1233932c77a5fad"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><p>Regarding the difference in usage between members and casual users, we can observe the following:</p>
+<ul>
+<li><p>The trip duration is 170% longer for Casual Users. Averaging 40.1 min for casual users and 15.1 min for members;</p></li>
+<li><p>Regarding the type of bicycle, the most used for members, in descending order, are “docked”, “classic” and “eletric”. For casual users they are “docked”, “eletric” and “classic”;</p></li>
+<li><p>Regarding the time of year, both users follow the general average with a peak in summer and less use in winter;</p></li>
+<li><p>The busiest member months are June, August, September and July. For casual users, the busiest months are June, August, July and May;</p></li>
+<li><p>Regarding the day of the week, the busiest days for members, in descending order, are Wednesday, Saturday, Friday and Tuesday. For casual users, the busiest days are Saturday, Sunday, Friday and Wednesday. With greater usage of the service on weekends for casual members compared to members;</p></li>
+<li><p>Regarding the time of day both types of users have more runs in the afternoon, however in casual members the night is busier than in the morning.</p></li>
+</ul></li>
+<li><p>The Stations and routes more often used are the following:</p></li>
+</ul>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(start_station_name) |&gt; 
+  summarise(number_of_trips = n()) |&gt;
+  arrange(-number_of_trips) |&gt; 
+  drop_na(start_station_name) |&gt; 
+  slice(1:20)</code></pre>
+<pre><code># A tibble: 20 × 2
+   start_station_name             number_of_trips
+   &lt;chr&gt;                                    &lt;int&gt;
+ 1 Streeter Dr &amp; Grand Ave                  58068
+ 2 Lake Shore Dr &amp; Monroe St                43715
+ 3 Theater on the Lake                      39522
+ 4 Clark St &amp; Elm St                        38576
+ 5 Lake Shore Dr &amp; North Blvd               38115
+ 6 Millennium Park                          34304
+ 7 Michigan Ave &amp; Oak St                    33945
+ 8 Wells St &amp; Concord Ln                    33524
+ 9 Wells St &amp; Elm St                        29896
+10 Clark St &amp; Armitage Ave                  29568
+11 Indiana Ave &amp; Roosevelt Rd               29365
+12 Dearborn St &amp; Erie St                    29132
+13 Clark St &amp; Lincoln Ave                   28735
+14 Broadway &amp; Barry Ave                     28245
+15 Wabash Ave &amp; Grand Ave                   27719
+16 Wells St &amp; Huron St                      27694
+17 Kingsbury St &amp; Kinzie St                 26953
+18 Columbus Dr &amp; Randolph St                26832
+19 St. Clair St &amp; Erie St                   25590
+20 Lake Shore Dr &amp; Wellington Ave           24929</code></pre>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(trip_route) |&gt; 
+  summarise(number_of_trips = n()) |&gt;
+  arrange(-number_of_trips) |&gt; 
+  drop_na(trip_route) |&gt; 
+  slice(1:20)</code></pre>
+<pre><code># A tibble: 20 × 2
+   trip_route                                                         number_of_trips
+   &lt;chr&gt;                                                                        &lt;int&gt;
+ 1 Streeter Dr &amp; Grand Ave to Streeter Dr &amp; Grand Ave                           10667
+ 2 Lake Shore Dr &amp; Monroe St to Lake Shore Dr &amp; Monroe St                        9443
+ 3 Millennium Park to Millennium Park                                            7025
+ 4 Michigan Ave &amp; Oak St to Michigan Ave &amp; Oak St                                6203
+ 5 Buckingham Fountain to Buckingham Fountain                                    6065
+ 6 Indiana Ave &amp; Roosevelt Rd to Indiana Ave &amp; Roosevelt Rd                      5276
+ 7 Theater on the Lake to Theater on the Lake                                    4986
+ 8 Fort Dearborn Dr &amp; 31st St to Fort Dearborn Dr &amp; 31st St                      4800
+ 9 Lake Shore Dr &amp; North Blvd to Lake Shore Dr &amp; North Blvd                      4495
+10 Michigan Ave &amp; 8th St to Michigan Ave &amp; 8th St                                4193
+11 Shore Dr &amp; 55th St to Shore Dr &amp; 55th St                                      4114
+12 Lake Shore Dr &amp; Monroe St to Streeter Dr &amp; Grand Ave                          3914
+13 Lakefront Trail &amp; Bryn Mawr Ave to Lakefront Trail &amp; Bryn Mawr Ave            3557
+14 Michigan Ave &amp; Lake St to Michigan Ave &amp; Lake St                              3333
+15 Lake Shore Dr &amp; Belmont Ave to Lake Shore Dr &amp; Belmont Ave                    3178
+16 Columbus Dr &amp; Randolph St to Columbus Dr &amp; Randolph St                        3142
+17 Montrose Harbor to Montrose Harbor                                            3130
+18 Wabash Ave &amp; 9th St to Wabash Ave &amp; 9th St                                    3097
+19 Wabash Ave &amp; Grand Ave to Wabash Ave &amp; Grand Ave                              3012
+20 Wabash Ave &amp; Roosevelt Rd to Wabash Ave &amp; Roosevelt Rd                        2916</code></pre>
+</div>
+<div id="share-phase" class="section level2">
+<h2>Share Phase</h2>
+<div id="by-the-hour-and-the-time-of-the-day" class="section level3">
+<h3>By the hour and the time of the day</h3>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, date_hour) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(date_hour, n_trip)) +  
+  geom_col(aes(color = member_casual, fill = member_casual), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+    title = &quot;Number of trips by he hour of the day&quot;,
+    color = &quot;Type of user&quot;,
+    fill = &quot;Type of user&quot;,
+    x = &quot;hour of the day&quot;,
+    y = &quot;No. of trips&quot;
+    )   </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, date_hour, trip_duration) |&gt; 
+  ggplot(aes(x= date_hour, y = trip_duration, color = member_casual, group = member_casual)) +  
+  geom_smooth()+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by he hour of the day&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;hour of the day&quot;,
+      y = &quot;Trip duration (min)&quot;
+    )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, day_time) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(day_time, n_trip)) +  
+  geom_col(aes(color = member_casual, fill = member_casual), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by the time of the day&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;Time of the day&quot;,
+      y = &quot;No. of trips&quot;
+    )   </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="by-month-and-season" class="section level3">
+<h3>By Month and Season</h3>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, date_month) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(date_month, n_trip)) +  
+  geom_col(aes(color = member_casual, fill = member_casual), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by the months&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;Month of the year&quot;,
+      y = &quot;No. of trips&quot;
+    )  </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, date_month, trip_duration) |&gt; 
+  ggplot(aes(x= date_month, y = trip_duration, color = member_casual, group = member_casual)) +  
+  geom_smooth()+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by the Months&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;hour of the day&quot;,
+      y = &quot;Trip duration (min)&quot;
+    )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, date_season) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(date_season, n_trip)) +  
+  geom_col(aes(color = member_casual, fill = member_casual), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by seasons&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;season of the year&quot;,
+      y = &quot;No. of trips&quot;
+    )  </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="by-type-of-the-bike" class="section level3">
+<h3>By type of the bike</h3>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, rideable_type) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(rideable_type, n_trip)) +  
+  geom_col(aes(color = member_casual, fill = member_casual), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by the type of the bike&quot;,
+      color = &quot;Type of user&quot;,
+      fill = &quot;Type of user&quot;,
+      x = &quot;type of the bike&quot;,
+      y = &quot;No. of trips&quot;
+    )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, rideable_type, date_hour) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(date_hour, n_trip)) +  
+  geom_col(aes(color = rideable_type, fill = rideable_type), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by he hour of the day&quot;,
+      color = &quot;Type of bike&quot;,
+      fill = &quot;Type of bike&quot;,
+      x = &quot;hour of the day&quot;,
+      y = &quot;No. of trips&quot;
+    )+
+  facet_wrap(vars(member_casual))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, rideable_type, date_hour, trip_duration) |&gt; 
+  ggplot(aes(x= date_hour, y = trip_duration, color = rideable_type, group = rideable_type)) +  
+  geom_smooth()+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Duration of the trips by the type of the bike&quot;,
+      color = &quot;Type of bike&quot;,
+      fill = &quot;Type of bike&quot;,
+      x = &quot;hour of the day&quot;,
+      y = &quot;Trip duration (min)&quot;
+    )+
+  facet_wrap(vars(member_casual))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(member_casual, rideable_type, date_month) |&gt; 
+  summarise(n_trip = n(), .groups = &#39;drop&#39;) |&gt;
+  arrange(-n_trip) |&gt; 
+  ggplot(mapping = aes(date_month, n_trip)) +  
+  geom_col(aes(color = rideable_type, fill = rideable_type), position = &quot;dodge2&quot;)+
+  ggthemes::scale_color_colorblind()+
+  ggthemes::scale_fill_colorblind()+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  ggthemes::theme_hc()+
+  labs(
+      title = &quot;Number of trips by the months&quot;,
+      color = &quot;Type of bike&quot;,
+      fill = &quot;Type of bike&quot;,
+      x = &quot;Month of the year&quot;,
+      y = &quot;No. of trips&quot;
+    )+
+  facet_wrap(vars(member_casual))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="stations-and-the-routs-more-offen-used" class="section level3">
+<h3>Stations and the Routs more offen used</h3>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(start_station_name) |&gt; 
+  summarise(n_trip = n()) |&gt;
+  arrange(-n_trip) |&gt; 
+  drop_na(start_station_name) |&gt; 
+  slice(1:20) |&gt; 
+  ggplot(mapping = aes(fct_reorder(start_station_name, -n_trip), n_trip)) +  
+  geom_col(aes(color = start_station_name, fill = start_station_name), position = &quot;dodge2&quot;)+
+  coord_flip()+
+  ggthemes::theme_hc()+
+  theme(legend.position=&quot;none&quot;)+
+  labs(
+    title = &quot;20 most used start point&quot;,
+    x = &quot;&quot;,
+    y = &quot;&quot;
+    )   </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bikeshare_data |&gt; 
+  group_by(trip_route) |&gt; 
+  summarise(n_trip = n()) |&gt;
+  arrange(-n_trip) |&gt; 
+  drop_na(trip_route) |&gt; 
+  slice(1:20) |&gt; 
+  ggplot(mapping = aes(fct_reorder(trip_route, -n_trip), n_trip)) +  
+  geom_col(aes(color = trip_route, fill = trip_route), position = &quot;dodge2&quot;)+
+  coord_flip()+
+  ggthemes::theme_hc()+
+  theme(legend.position=&quot;none&quot;)+
+  labs(
+    title = &quot;Top 20 Routes&quot;,
+    x = &quot;&quot;,
+    y = &quot;&quot;
+  )</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="act" class="section level2">
+<h2>Act</h2>
+<div id="key-findings" class="section level3">
+<h3>Key findings</h3>
+<ul>
+<li>Different of members, casual user use service more often during the weekend;</li>
+<li>Also have the mean duration of the trips 170% higher than members;</li>
+<li>They the highest trip duration during dawn (from 12 am to 5 am) and at night (from 9 pm to 11 pm). With the pic at 2 am;</li>
+<li>During this time (from 9 pm to 3 am) the number of trips for casual users are higher than members;</li>
+<li>Casual users use the service mor from may to september;</li>
+<li>From june to september the have the highest trip duration in the year;</li>
+<li>use more eletrics bikes thans members.</li>
+</ul>
+</div>
+<div id="recommendations" class="section level3">
+<h3>Recommendations</h3>
+<ul>
+<li>Create a subscription based on time-of-day to encourage casual users that ride from 9 pm to 5 am to subscribe;</li>
+<li>Implement discounts or a points system based on loyalty (frequency of use
+) and high trip-duration users;</li>
+<li>Create seasonal subscriptions such as summer and spring. Or implement discounts on temporary subscriptions (3, 6, 9, 12 months);</li>
+<li>Create subscription especific to ride on week day or on the weekend;</li>
+<li>Create subscriptions for specific types of bicycles. Plans to use only electric bicycles, for example.</li>
+</ul>
+</div>
+</div>
