@@ -20,9 +20,10 @@ knitr::opts_chunk$set(
   message = FALSE,
   error = FALSE,
   warning = FALSE,
+  fig.width = 16,
+  fig.height = 10,
   out.width = "100%",
-  fig.align = "center",
-  dpi = 400
+  fig.align = "center"
   )
 ```
 
@@ -75,7 +76,7 @@ regions <- read_region()
 theme_set(
   ggthemes::theme_base() +
       theme(
-        text = element_text(family = "Ubuntu Regular", color = "#22211d"),
+        text = element_text(family = "Ubuntu Regular", color = "#22211d",  size = 22),
         axis.line = element_blank(),
         axis.text.x = element_text(family = "Ubuntu Regular", color = "#22211d"),
         axis.text.y = element_text(family = "Ubuntu Regular", color = "#22211d"),
@@ -237,13 +238,10 @@ plot1 <- ggplot(data = data_plot1, mapping = aes(fire_number, name_state)) +
   scale_fill_viridis_d()+
   labs(
     title = "Quantidade de focos de incêndios no Brasil de 1998 a 2017",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios",
     color = "Região do país",
     fill = "Região do país"
-  )+
-  theme(
-    legend.position = c(0.86, 0.86)
   )
 
 
@@ -266,7 +264,6 @@ plot2 <- data_plot1 |>
        fill ="Focos de incêndios")+
   theme(
     axis.text.x = element_blank(),
-    legend.position = c(0.86, 0.16),
     axis.text.y = element_blank()
   )
 
@@ -291,14 +288,13 @@ plot3 <-  ggplot(data = data_plot34, aes(name_region,fire_number)) +
   scale_fill_gradient(low = "yellow", high = "red")+
   labs(
     title = "Quantidade de focos de incêndios de 1998 à 2017 por região",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios"
   )+
   theme(
     legend.position = "none"
   )
-
-plotly::ggplotly(plot3, width = 900, height = 600)
+plot3
 ```
 
 
@@ -318,12 +314,9 @@ plot4 <- data_plot34 |>
        fill ="Focos de incêndios")+
   theme(
     axis.text.x = element_blank(),
-    legend.position = c(0.86, 0.16),
     axis.text.y = element_blank()
   )
-
-plotly::ggplotly(plot4, width = 900, height = 600)
-
+plot4
 ```
 
 
@@ -348,21 +341,16 @@ plot5 <- ggplot(data = data_plot3, mapping = aes(fire_number, name_state)) +
   scale_fill_gradient(low = "yellow", high = "red")+
   labs(
     title = "Quantidade de focos de incêndios na região Norte de 1998 à 2017",
-    subtitle = "de 1998 a 2017",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios",
     color = "Focos de incêndios",
     fill = "Focos de incêndios"
   )+
   theme(
-    legend.position = c(0.86, 0.86)
-  )+
-  theme(
     legend.position = "none"
   )
 
-
-plotly::ggplotly(plot5, width = 900, height = 600)
+plot5
 
 ```
 
@@ -385,11 +373,10 @@ plot6 <- data_plot3 |>
        fill ="Focos de incêndios")+
   theme(
     axis.text.x = element_blank(),
-    legend.position = c(0.86, 0.16),
     axis.text.y = element_blank()
   )
 
-plotly::ggplotly(plot6, width = 900, height = 600)
+plot6
 
 
 ```
@@ -411,27 +398,22 @@ data_plot4 <- fire_data_broad |>
   unique()
 
 
-plot6 <- ggplot(data = data_plot4, mapping = aes(fire_number, fire_month)) +
+plot7 <- ggplot(data = data_plot4, mapping = aes(fire_number, fire_month)) +
   geom_col(aes(color = fire_number, fill = fire_number), width = 0.8)+
   scale_color_gradient(low = "yellow", high = "red")+
   scale_fill_gradient(low = "yellow", high = "red")+
   labs(
     title = "Quantidade de focos de incêndios no Pará de 1998 a 2017",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios",
     color = "Focos de incêndios",
     fill = "Focos de incêndios"
   )+
   theme(
-    legend.position = c(0.86, 0.86)
-  )+
-  theme(
     legend.position = "none"
   )
 
-
-plotly::ggplotly(plot6, width = 900, height = 600)
-
+plot7
 
 
 ```
@@ -443,7 +425,7 @@ Para <- states |>
   filter(name_state == "Para")
 
 
-plot7 <- data_plot4 |>
+plot8 <- data_plot4 |>
   left_join(states, by = ("name_state")) |> 
   st_as_sf() |> 
   ggplot() +
@@ -457,11 +439,10 @@ plot7 <- data_plot4 |>
        fill ="Focos de incêndios")+
   theme(
     axis.text.x = element_blank(),
-    legend.position = c(0.86, 0.16),
     axis.text.y = element_blank()
   )
 
-plotly::ggplotly(plot7, width = 900, height = 600)
+plot8
 
 
 ```
@@ -480,28 +461,22 @@ data_plot5 <- fire_data_broad |>
   unique()
 
 
-plot7 <- ggplot(data = data_plot5, mapping = aes(fire_number, name_state)) +
+plot9 <- ggplot(data = data_plot5, mapping = aes(fire_number, name_state)) +
   geom_col(aes(color = fire_number, fill = fire_number), width = 0.8)+
   scale_color_gradient(low = "yellow", high = "red")+
   scale_fill_gradient(low = "yellow", high = "red")+
   labs(
     title = "Quantidade de focos de incêndios no Brasil ano de 2010",
-    subtitle = "de 1998 a 2017",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios",
     color = "Focos de incêndios",
     fill = "Focos de incêndios"
   )+
   theme(
-    legend.position = c(0.86, 0.86)
-  )+
-  theme(
     legend.position = "none"
   )
 
-
-plotly::ggplotly(plot7, width = 900, height = 600)
-
+plot9
 
 
 ```
@@ -523,28 +498,22 @@ data_plot6 <- fire_data_broad |>
   unique()
 
 
-plot8 <- ggplot(data = data_plot6, mapping = aes(fire_number, fire_month)) +
+plot10 <- ggplot(data = data_plot6, mapping = aes(fire_number, fire_month)) +
   geom_col(aes(color = fire_number, fill = fire_number), width = 0.8)+
   scale_color_gradient(low = "yellow", high = "red")+
   scale_fill_gradient(low = "yellow", high = "red")+
   labs(
     title = "Quantidade de focos de incêndios no Brasil ano de 2010",
-    subtitle = "de 1998 a 2017",
-    y = "states",
+    y = "Estados",
     x = "Número de focos de incêndios",
     color = "Focos de incêndios",
     fill = "Focos de incêndios"
   )+
   theme(
-    legend.position = c(0.86, 0.86)
-  )+
-  theme(
     legend.position = "none"
   )
 
-
-plotly::ggplotly(plot8, width = 900, height = 600)
-
+plot10
 
 ```
 
