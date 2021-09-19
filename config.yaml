@@ -1,4 +1,4 @@
-baseURL: "https://flamboyant-lamport-b9569e.netlify.app/"
+baseURL: "https://blogdotales.netlify.app"
 title: Tales Gomes
 paginate: 5
 theme: hugo-PaperMod
