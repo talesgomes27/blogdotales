@@ -245,7 +245,6 @@ plot1 <- ggplot(data = data_plot1, mapping = aes(fire_number, name_state)) +
   )
 
 plot1
-
 ```
 
 
