@@ -57,7 +57,7 @@ params:
     profileMode:
         enabled: true # needs to be explicitly set
         title: Tales Gomes
-        subtitle: "Engenheiro da Computação e Analista de dados"
+        subtitle: "Engenheiro da Computação | Analista de dados | Ciêntista de dados"
         imageUrl: "dark-blue-avatar.png"
         imageWidth: 200
         imageHeight: 200
