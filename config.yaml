@@ -131,6 +131,10 @@ menu:
           name: Pesquisa
           url: search/
           weight: 40
+        - identifier: Portifólio
+          name: Portifólio
+          url: "https://talesgomes.netlify.app/"
+          weight: 50
 
 outputs:
     home:
