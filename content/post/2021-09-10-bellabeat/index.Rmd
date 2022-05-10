@@ -312,7 +312,7 @@ daily_data_long <- daily_data |>
 Primeiramente realizamos a comparação entre a distância ativa percorrida e tempo por tipo de atividade, ambos em relação ao dia da semana. Podemos observar que os dias mais ativos são terça, quarta e quinta. Bem como que por mais que atividades leves, moderadas e intensas sejam a menor parte do dia, são responsáveis por virtualmente 100% do tempo ativo dos usuários.
 
 ```{r PLot Dia da semana Vs Distancia e calorias}
-
+# 
 plot1 <- ggplot(daily_data_long) +
   geom_col(aes(x = day_of_the_week, y = activities_dist,
                color = activities_type, fill = activities_type))+

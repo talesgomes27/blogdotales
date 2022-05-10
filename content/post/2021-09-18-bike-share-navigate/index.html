@@ -14,7 +14,6 @@ cover:
     relative: true # To use relative path for cover image, used in hugo Page-bundles
 ---
 
-<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 <script src="{{< blogdown/postref >}}index_files/core-js/shim.min.js"></script>
 <script src="{{< blogdown/postref >}}index_files/react/react.min.js"></script>
 <script src="{{< blogdown/postref >}}index_files/react/react-dom.min.js"></script>
@@ -119,14 +118,14 @@ database/202105-divvy-tripdata.csv database/202106-divvy-tripdata.csv </code></p
                                col_names = TRUE)</code></pre>
 <pre class="r"><code>head(bikeshare_data)</code></pre>
 <pre><code># A tibble: 6 × 13
-  ride_id          rideable_type started_at          ended_at            start_station_n…
-  &lt;chr&gt;            &lt;chr&gt;         &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt;           
-1 762198876D69004D docked_bike   2020-07-09 15:22:02 2020-07-09 15:25:52 Ritchie Ct &amp; Ba…
-2 BEC9C9FBA0D4CF1B docked_bike   2020-07-24 23:56:30 2020-07-25 00:20:17 Halsted St &amp; Ro…
-3 D2FD8EA432C77EC1 docked_bike   2020-07-08 19:49:07 2020-07-08 19:56:22 Lake Shore Dr &amp;…
-4 54AE594E20B35881 docked_bike   2020-07-17 19:06:42 2020-07-17 19:27:38 LaSalle St &amp; Il…
-5 54025FDC7440B56F docked_bike   2020-07-04 10:39:57 2020-07-04 10:45:05 Lake Shore Dr &amp;…
-6 65636B619E24257F docked_bike   2020-07-28 16:33:03 2020-07-28 16:49:10 Fairbanks St &amp; …
+  ride_id rideable_type started_at          ended_at            start_station_n…
+  &lt;chr&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt;           
+1 762198… docked_bike   2020-07-09 15:22:02 2020-07-09 15:25:52 Ritchie Ct &amp; Ba…
+2 BEC9C9… docked_bike   2020-07-24 23:56:30 2020-07-25 00:20:17 Halsted St &amp; Ro…
+3 D2FD8E… docked_bike   2020-07-08 19:49:07 2020-07-08 19:56:22 Lake Shore Dr &amp;…
+4 54AE59… docked_bike   2020-07-17 19:06:42 2020-07-17 19:27:38 LaSalle St &amp; Il…
+5 54025F… docked_bike   2020-07-04 10:39:57 2020-07-04 10:45:05 Lake Shore Dr &amp;…
+6 65636B… docked_bike   2020-07-28 16:33:03 2020-07-28 16:49:10 Fairbanks St &amp; …
 # … with 8 more variables: start_station_id &lt;chr&gt;, end_station_name &lt;chr&gt;,
 #   end_station_id &lt;chr&gt;, start_lat &lt;dbl&gt;, start_lng &lt;dbl&gt;, end_lat &lt;dbl&gt;,
 #   end_lng &lt;dbl&gt;, member_casual &lt;chr&gt;</code></pre>
@@ -429,28 +428,28 @@ reactable(bikeshare_skim_member, filterable = TRUE, paginationType = &quot;jump&
   drop_na(trip_route) |&gt; 
   slice(1:20)</code></pre>
 <pre><code># A tibble: 20 × 2
-   trip_route                                                         number_of_trips
-   &lt;chr&gt;                                                                        &lt;int&gt;
- 1 Streeter Dr &amp; Grand Ave to Streeter Dr &amp; Grand Ave                           10667
- 2 Lake Shore Dr &amp; Monroe St to Lake Shore Dr &amp; Monroe St                        9443
- 3 Millennium Park to Millennium Park                                            7025
- 4 Michigan Ave &amp; Oak St to Michigan Ave &amp; Oak St                                6203
- 5 Buckingham Fountain to Buckingham Fountain                                    6065
- 6 Indiana Ave &amp; Roosevelt Rd to Indiana Ave &amp; Roosevelt Rd                      5276
- 7 Theater on the Lake to Theater on the Lake                                    4986
- 8 Fort Dearborn Dr &amp; 31st St to Fort Dearborn Dr &amp; 31st St                      4800
- 9 Lake Shore Dr &amp; North Blvd to Lake Shore Dr &amp; North Blvd                      4495
-10 Michigan Ave &amp; 8th St to Michigan Ave &amp; 8th St                                4193
-11 Shore Dr &amp; 55th St to Shore Dr &amp; 55th St                                      4114
-12 Lake Shore Dr &amp; Monroe St to Streeter Dr &amp; Grand Ave                          3914
-13 Lakefront Trail &amp; Bryn Mawr Ave to Lakefront Trail &amp; Bryn Mawr Ave            3557
-14 Michigan Ave &amp; Lake St to Michigan Ave &amp; Lake St                              3333
-15 Lake Shore Dr &amp; Belmont Ave to Lake Shore Dr &amp; Belmont Ave                    3178
-16 Columbus Dr &amp; Randolph St to Columbus Dr &amp; Randolph St                        3142
-17 Montrose Harbor to Montrose Harbor                                            3130
-18 Wabash Ave &amp; 9th St to Wabash Ave &amp; 9th St                                    3097
-19 Wabash Ave &amp; Grand Ave to Wabash Ave &amp; Grand Ave                              3012
-20 Wabash Ave &amp; Roosevelt Rd to Wabash Ave &amp; Roosevelt Rd                        2916</code></pre>
+   trip_route                                                    number_of_trips
+   &lt;chr&gt;                                                                   &lt;int&gt;
+ 1 Streeter Dr &amp; Grand Ave to Streeter Dr &amp; Grand Ave                      10667
+ 2 Lake Shore Dr &amp; Monroe St to Lake Shore Dr &amp; Monroe St                   9443
+ 3 Millennium Park to Millennium Park                                       7025
+ 4 Michigan Ave &amp; Oak St to Michigan Ave &amp; Oak St                           6203
+ 5 Buckingham Fountain to Buckingham Fountain                               6065
+ 6 Indiana Ave &amp; Roosevelt Rd to Indiana Ave &amp; Roosevelt Rd                 5276
+ 7 Theater on the Lake to Theater on the Lake                               4986
+ 8 Fort Dearborn Dr &amp; 31st St to Fort Dearborn Dr &amp; 31st St                 4800
+ 9 Lake Shore Dr &amp; North Blvd to Lake Shore Dr &amp; North Blvd                 4495
+10 Michigan Ave &amp; 8th St to Michigan Ave &amp; 8th St                           4193
+11 Shore Dr &amp; 55th St to Shore Dr &amp; 55th St                                 4114
+12 Lake Shore Dr &amp; Monroe St to Streeter Dr &amp; Grand Ave                     3914
+13 Lakefront Trail &amp; Bryn Mawr Ave to Lakefront Trail &amp; Bryn Ma…            3557
+14 Michigan Ave &amp; Lake St to Michigan Ave &amp; Lake St                         3333
+15 Lake Shore Dr &amp; Belmont Ave to Lake Shore Dr &amp; Belmont Ave               3178
+16 Columbus Dr &amp; Randolph St to Columbus Dr &amp; Randolph St                   3142
+17 Montrose Harbor to Montrose Harbor                                       3130
+18 Wabash Ave &amp; 9th St to Wabash Ave &amp; 9th St                               3097
+19 Wabash Ave &amp; Grand Ave to Wabash Ave &amp; Grand Ave                         3012
+20 Wabash Ave &amp; Roosevelt Rd to Wabash Ave &amp; Roosevelt Rd                   2916</code></pre>
 </div>
 <div id="share-phase" class="section level2">
 <h2>Share Phase</h2>
